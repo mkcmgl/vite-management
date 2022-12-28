@@ -54,9 +54,9 @@ const validatePass = (rule: any, value: any, callback: any) => {
     callback();
   }
 };
-const validatePass2 = (rule: any, value: any, callback: any) => {
+const validatePwd = (rule: unknown, value: string|undefined, callback: (msg?:string|Error)=>void) => {
   if (value === "") {
-    callback(new Error("Please input the password again"));
+    callback(new Error("密码不能为空"));
   }
   // else if (value !== ruleForm.pass) {
   //     callback(new Error("Two inputs don't match!"))
@@ -80,8 +80,8 @@ const rules = reactive({
     { validator: validatePass, trigger: "blur" },
   ],
   pwd: [
-    { validator: validatePass2, trigger: "blur" },
-    { required: true, message: "密码", trigger: blur },
+    { validator: validatePwd, trigger: "blur" },
+    { required: true, message: "密码不能为空", trigger: blur },
   ],
 });
 
@@ -101,7 +101,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.resetFields();
 };
-const login = () => {};
+const login = () => {
+
+};
 </script>
 
 <style lang="less" scope></style>
