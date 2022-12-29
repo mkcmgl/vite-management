@@ -24,28 +24,16 @@
 <script lang="ts" setup>
 import { reactive, ref, toRefs } from "vue";
 import type { FormInstance } from "element-plus";
-const ruleFormRef = ref<FormInstance>();
+import { adminLoginApi ,getAdminInfo} from "../../request/api";
+import Cookie from 'js-cookie';
+import {useRouter,} from 'vue-router';
+// const ruleFormRef = ref<FormInstance>();
 
-const checkAge = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error("Please input the age"));
-  }
-  setTimeout(() => {
-    if (!Number.isInteger(value)) {
-      callback(new Error("Please input digits"));
-    } else {
-      if (value < 18) {
-        callback(new Error("Age must be greater than 18"));
-      } else {
-        callback();
-      }
-    }
-  }, 1000);
-};
 
-const validatePass = (rule: any, value: any, callback: any) => {
+
+const validateUsername = (rule: any, value: any, callback: any) => {
   if (value === "") {
-    callback(new Error("Please input the password"));
+    callback(new Error("用户名不能为空"));
   } else {
     // if (ruleForm.checkPass !== '') {
     //     if (!ruleFormRef.value) return
@@ -54,7 +42,11 @@ const validatePass = (rule: any, value: any, callback: any) => {
     callback();
   }
 };
-const validatePwd = (rule: unknown, value: string|undefined, callback: (msg?:string|Error)=>void) => {
+const validatePwd = (
+  rule: unknown,
+  value: string | undefined,
+  callback: (msg?: string | Error) => void
+) => {
   if (value === "") {
     callback(new Error("密码不能为空"));
   }
@@ -77,7 +69,7 @@ let { ruleForm } = toRefs(state);
 const rules = reactive({
   username: [
     { required: true, message: "用户名不能为空", trigger: blur },
-    { validator: validatePass, trigger: "blur" },
+    { validator: validateUsername, trigger: "blur" },
   ],
   pwd: [
     { validator: validatePwd, trigger: "blur" },
@@ -85,24 +77,32 @@ const rules = reactive({
   ],
 });
 
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.validate((valid) => {
-    if (valid) {
-      console.log("submit!");
-    } else {
-      console.log("error submit!");
-      return false;
-    }
-  });
-};
 
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.resetFields();
-};
+
+let ruleFormRef = ref();
+let router=useRouter()
 const login = () => {
-
+  ruleFormRef.value
+    .validate()
+    .then(() => {
+      console.log("then");
+      adminLoginApi({
+        username: ruleForm.value.username,
+        password: ruleForm.value.pwd,
+      }).then((res) => {
+        if(res.code===200){
+          Cookie.set('token',res.data.tokenHead+res.data.token,{expires:7})
+          getAdminInfo().then((resData)=>{
+            if(resData.code===200){
+              router.push('/home')
+            }
+        })
+        }
+      });
+    })
+    .catch(() => {
+      console.log("catch");
+    });
 };
 </script>
 
