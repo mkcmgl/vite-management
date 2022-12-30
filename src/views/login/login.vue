@@ -27,9 +27,17 @@ import type { FormInstance } from "element-plus";
 import { adminLoginApi ,getAdminInfo} from "../../request/api";
 import Cookie from 'js-cookie';
 import {useRouter,} from 'vue-router';
+import {useStore} from 'vuex';
 // const ruleFormRef = ref<FormInstance>();
 
-
+  const state = reactive({
+  ruleForm: {
+    username: "",
+    pwd: "",
+  },
+});
+let { ruleForm } = toRefs(state);
+let store=useStore()
 
 const validateUsername = (rule: any, value: any, callback: any) => {
   if (value === "") {
@@ -58,13 +66,7 @@ const validatePwd = (
   }
 };
 
-const state = reactive({
-  ruleForm: {
-    username: "",
-    pwd: "",
-  },
-});
-let { ruleForm } = toRefs(state);
+
 
 const rules = reactive({
   username: [
@@ -85,18 +87,17 @@ const login = () => {
   ruleFormRef.value
     .validate()
     .then(() => {
-      console.log("then");
       adminLoginApi({
         username: ruleForm.value.username,
         password: ruleForm.value.pwd,
       }).then((res) => {
         if(res.code===200){
           Cookie.set('token',res.data.tokenHead+res.data.token,{expires:7})
-          getAdminInfo().then((resData)=>{
-            if(resData.code===200){
-              router.push('/home')
-            }
-        })
+          
+          store.dispatch('getInfo').then(res=>{
+            router.push('/home')
+          })
+
         }
       });
     })

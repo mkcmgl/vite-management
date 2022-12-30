@@ -1,7 +1,7 @@
+import Cookies from 'js-cookie';
 import { App } from 'vue';
 import {createRouter,createWebHashHistory,createWebHistory,RouteRecordRaw} from 'vue-router';
-
-
+import store from '../store';
 const routes:RouteRecordRaw[]=[
     {
         path:'/login',
@@ -24,13 +24,20 @@ const routes:RouteRecordRaw[]=[
 ]
 
 const router = createRouter({
-
-   
-
     history: createWebHashHistory(),
     routes
 })
-export const store= (app:App<Element>)=>{
+router.beforeEach((to,from,next)=>{
+
+    const token=Cookies.get('token');
+    
+    if(token && store.state.menus.length==0){
+        store.dispatch('getInfo')
+    }
+    next()
+})
+
+export const initRouter= (app:App<Element>)=>{
     app.use(router)
 }
 // export default router
