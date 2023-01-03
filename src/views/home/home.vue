@@ -23,7 +23,7 @@
                 
             <el-menu-item
             :index="'/'+menu.name+'/'+submenu.name"
-            v-if="submenu.hidden"
+            v-if="!submenu.hidden"
           >
             {{ submenu.title }}
           </el-menu-item>
@@ -33,7 +33,9 @@
       </el-menu>
     </div>
 
-    <div class="homepage_content">内容</div>
+    <div class="homepage_content">
+      <router-view ></router-view>
+    </div>
   </div>
 </template>
 
