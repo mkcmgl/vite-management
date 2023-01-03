@@ -8,7 +8,7 @@ interface ManageResult<T={}>{
     code:number
     data:T
 }
-type PromiseRes<T>=Promise<ManageResult<T>>
+type PromiseRes<T = {}> = Promise<ManageResult<T>>
 
 interface LoginResult{
    token:string
@@ -25,5 +25,7 @@ export const adminLoginApi = (data: AdminLoginData):PromiseRes<LoginResult> => r
 
 export const getAdminInfo = ( ):PromiseRes<getAdminInfoRes> => request.get('/admin/info');
 
-export const getAdminList = (data:adminListParams ):PromiseRes<getAdminListRes> => request.get('/admin/list',{params:data});
+export const getAdminList = (data:adminListParams ):PromiseRes<getAdminListRes> => 
+request.get('/admin/list',{params:data});
 
+export const updateAdmin = (id:number,data:AdminObjItf ):PromiseRes=> request.post('/admin/update/'+id,data);
