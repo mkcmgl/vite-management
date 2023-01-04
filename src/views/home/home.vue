@@ -87,7 +87,7 @@ const handleClose = (key: string, keyPath: string[]) => {
     left: 250px;
     bottom: 0;
     right: 0;
-    background-color: skyblue;
+   
   }
 }
 </style>

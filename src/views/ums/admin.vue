@@ -33,7 +33,7 @@
 
         <el-table-column label="操作">
             <template #default="{ row }">
-                <el-button type="text" @click="">分配角色</el-button>
+                <el-button type="text" @click="allocRole(row.id)">分配角色</el-button>
                 <el-button type="text" @click="edit(row)">编辑</el-button>
             </template>
         </el-table-column>
@@ -41,24 +41,33 @@
     </el-table>
 
     <EditAdmin :visible="visible" @close="closeDialog" :form="rowData"></EditAdmin>
-
+    <EditRoleVue :form="roleData" :visible="roleVisible" @close="closeRole"></EditRoleVue>
 </template>
 
 <script lang='ts' setup>
-import { getAdminList } from '../../request/api'
+import { getAdminList,getAdminRoleById ,getRoleListAll} from '../../request/api'
 import { reactive, ref, toRefs, } from 'vue'
 import EditAdmin from './components/EditAdmin.vue';
+import EditRoleVue from './components/EditRole.vue';
 
 const state = reactive<{
     tableData: {}[],
     visible: boolean,
     rowData: AdminObjItf
+    roleVisible:boolean
+    roleData:AdminRoleFormData
 }>({
     tableData: [],
     visible: false,
-    rowData: {}
+    rowData: {},
+    roleVisible:false,
+    roleData:{
+        userRoles:[],
+        roleLists:[],
+        adminId:0
+    }
 })
-const { tableData, visible, rowData } = toRefs(state)
+const { tableData, visible, rowData,roleVisible ,roleData} = toRefs(state)
 
 const fetchData=()=>{
     getAdminList({ keyword: '', pageNum: 1, pageSize: 10 }).then(res => {
@@ -94,6 +103,28 @@ const closeDialog = (val?: 'reload') => {
     if (val === 'reload') {
         fetchData()
     }
+}
+
+// 获取所有角色
+getRoleListAll().then(res => {
+  if (res.code === 200) {
+    roleData.value.roleLists = res.data;
+  }
+})
+
+const allocRole=(id: number)=>{
+    getAdminRoleById(id).then(res => {
+    if (res.code === 200) {
+      roleVisible.value = true;
+      roleData.value.adminId = id;
+      roleData.value.userRoles = res.data;
+    }
+  })
+    
+}
+
+const closeRole=()=>{
+    roleVisible.value=false
 }
 </script>
 

@@ -8,3 +8,8 @@
     id?:number
 
 }
+interface AdminRoleFormData {
+    userRoles: RoleObjItf[];
+    roleLists: RoleObjItf[];
+    adminId: number;
+  }
